@@ -1,9 +1,13 @@
 import React from 'react';
 import './App.css';
-import Map from './components/Map';
+import NetherlandsMap from './components/NetherlandsMap';
 
 const App = () => {
-  return <Map />;
+  return (
+    <div className="app">
+      <NetherlandsMap />
+    </div>
+  );
 };
 
 export default App;
