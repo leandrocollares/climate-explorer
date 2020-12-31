@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { geoMercator, geoPath } from 'd3';
-import { feature } from 'topojson-client';
 
 const width = 600;
 const height = 600;
@@ -15,36 +15,27 @@ const projection = geoMercator()
 
 const pathGenerator = geoPath().projection(projection);
 
-const NetherlandsMap = () => {
-  const [geographies, setGeographies] = useState([]);
-
-  useEffect(() => {
-    fetch('/nl.json').then((response) => {
-      if (response.status !== 200) {
-        return;
-      }
-      response.json().then((nldata) => {
-        setGeographies(feature(nldata, nldata.objects.subunits).features);
-      });
-    });
-  }, []);
-
+const NetherlandsMap = ({ geographicalData }) => {
   return (
     <svg width={width} height={height}>
       <g className="map">
-        {geographies.map((d) => (
+        {geographicalData.map((d) => (
           <path
             key={`${d.properties.name}`}
             d={pathGenerator(d)}
             className="province"
-            fill="000000"
-            stroke="#FFFFFF"
+            fill="#e5f5f9"
+            stroke="#c5c5c5"
             strokeWidth={0.5}
           />
         ))}
       </g>
     </svg>
   );
+};
+
+NetherlandsMap.propTypes = {
+  geographicalData: PropTypes.array,
 };
 
 export default NetherlandsMap;
