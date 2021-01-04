@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
+import PropTypes from 'prop-types';
 import { geoMercator, geoPath, select } from 'd3';
-import { feature } from 'topojson-client';
 
 const width = 600;
 const height = 600;
@@ -13,9 +13,7 @@ const projection = geoMercator()
   .center([centerLong, centerLat])
   .translate([width / 2, height / 2]);
 
-const NetherlandsMapCanvas = () => {
-  const [geographies, setGeographies] = useState([]);
-
+const NetherlandsMapCanvas = ({ geographicalData }) => {
   const contextRef = useRef(null);
 
   const canvasNode = select(contextRef.current).node();
@@ -29,21 +27,10 @@ const NetherlandsMapCanvas = () => {
 
   const pathGenerator = geoPath().projection(projection).context(context);
 
-  useEffect(() => {
-    fetch('/nl.json').then((response) => {
-      if (response.status !== 200) {
-        return;
-      }
-      response.json().then((nldata) => {
-        setGeographies(feature(nldata, nldata.objects.subunits).features);
-      });
-    });
-  }, []);
-
   return (
     <div>
       <canvas width={width} height={height} ref={contextRef}>
-        {geographies.forEach((d) => {
+        {geographicalData.forEach((d) => {
           context.fillStyle = '#000000';
           context.beginPath();
           pathGenerator(d);
@@ -52,6 +39,10 @@ const NetherlandsMapCanvas = () => {
       </canvas>
     </div>
   );
+};
+
+NetherlandsMapCanvas.propTypes = {
+  geographicalData: PropTypes.array,
 };
 
 export default NetherlandsMapCanvas;
