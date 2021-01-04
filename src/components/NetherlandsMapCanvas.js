@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { geoMercator, geoPath, select } from 'd3';
 
@@ -14,29 +14,30 @@ const projection = geoMercator()
   .translate([width / 2, height / 2]);
 
 const NetherlandsMapCanvas = ({ geographicalData }) => {
-  const contextRef = useRef(null);
+  const contextRef = useRef();
 
-  const canvasNode = select(contextRef.current).node();
-  console.log(canvasNode);
+  useEffect(() => {
+    const canvasNode = select(contextRef.current).node();
 
-  const context = canvasNode.getContext('2d');
-  console.log(context);
+    const context = canvasNode.getContext('2d');
 
-  context.strokeStyle = '#ffffff';
-  context.lineWidth = 0.3;
+    context.strokeStyle = '#c5c5c5';
+    context.lineWidth = 0.5;
+    context.fillStyle = '#e5f5f9';
 
-  const pathGenerator = geoPath().projection(projection).context(context);
+    const pathGenerator = geoPath().projection(projection).context(context);
+
+    geographicalData.forEach((d) => {
+      context.beginPath();
+      pathGenerator(d);
+      context.fill();
+      context.stroke();
+    });
+  }, [contextRef, projection]);
 
   return (
     <div>
-      <canvas width={width} height={height} ref={contextRef}>
-        {geographicalData.forEach((d) => {
-          context.fillStyle = '#000000';
-          context.beginPath();
-          pathGenerator(d);
-          context.fill();
-        })}
-      </canvas>
+      <canvas width={width} height={height} ref={contextRef} />
     </div>
   );
 };
